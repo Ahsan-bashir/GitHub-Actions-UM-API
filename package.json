@@ -1,0 +1,28 @@
+{
+  "name": "user-management-api",
+  "version": "1.0.0",
+  "description": "User Management API with GitHub Actions CI/CD",
+  "main": "src/index.js",
+   "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --coverage --detectOpenHandles",
+    "test:watch": "jest --watchALL"
+  },
+  "keywords": ["express", "api", "github-actions", "ci-cd"],
+  "author": "Ahsan",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
+    "supertest": "^7.1.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": ["/node_modules/"],
+    "testMatch": ["**/__tests__/**/*.test.js"]
+  }
+}
