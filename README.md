@@ -1,6 +1,6 @@
 # User Management API - GitHub Actions Project
 
-![Node.js CI](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/workflows/Node.js%20CI/badge.svg)
+![Node.js CI](https://github.com/Ahsan-bashir/GitHub-Actions-UM-API/workflows/Node.js%20CI/badge.svg)
 
 Express.js REST API for user management with automated testing using GitHub Actions.
 
