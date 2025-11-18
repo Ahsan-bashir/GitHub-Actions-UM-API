@@ -1,6 +1,5 @@
-name: Node.js CI
+name: Node.js CI/CD
 
-# Trigger the workflow on push or pull request to main branch
 on:
   push:
     branches: [ main, master ]
@@ -8,41 +7,153 @@ on:
     branches: [ main, master ]
 
 jobs:
-  test:
-    # Run tests on Ubuntu
+  # Job 1: Code Quality Checks (Linting & Formatting)
+  lint:
+    name: Code Quality
     runs-on: ubuntu-latest
     
-    # Matrix strategy - test on multiple Node versions
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run ESLint
+      run: npm run lint
+    
+    - name: Check code formatting
+      run: npm run format:check
+  
+  # Job 2: Run Tests (depends on lint passing)
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: lint  # This job waits for 'lint' to complete successfully
+    
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
     
     steps:
-    # Step 1: Checkout the code from repository
     - name: Checkout code
       uses: actions/checkout@v4
     
-    # Step 2: Setup Node.js environment
     - name: Setup Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     
-    # Step 3: Install dependencies
     - name: Install dependencies
       run: npm ci
     
-    # Step 4: Run tests
     - name: Run tests
       run: npm test
     
-    # Step 5: Upload coverage reports (optional)
-    - name: Upload coverage to Codecov
+    - name: Upload coverage reports
       uses: codecov/codecov-action@v3
       if: matrix.node-version == '20.x'
       with:
         files: ./coverage/lcov.info
         flags: unittests
-        name: codecov-umbrella
         fail_ci_if_error: false
+  
+  # Job 3: Build Validation (runs in parallel with test after lint)
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Validate package.json
+      run: npm run validate || echo "No validate script found"
+    
+    - name: Check for security vulnerabilities
+      run: npm audit --audit-level=moderate
+      continue-on-error: true
+
+
+
+
+
+
+
+
+
+
+
+# -------------------Project 01 Code -------------------------
+
+
+
+
+
+
+
+# name: Node.js CI
+
+# # Trigger the workflow on push or pull request to main branch
+# on:
+#   push:
+#     branches: [ main, master ]
+#   pull_request:
+#     branches: [ main, master ]
+
+# jobs:
+#   test:
+#     # Run tests on Ubuntu
+#     runs-on: ubuntu-latest
+    
+#     # Matrix strategy - test on multiple Node versions
+#     strategy:
+#       matrix:
+#         node-version: [18.x, 20.x, 22.x]
+    
+#     steps:
+#     # Step 1: Checkout the code from repository
+#     - name: Checkout code
+#       uses: actions/checkout@v4
+    
+#     # Step 2: Setup Node.js environment
+#     - name: Setup Node.js ${{ matrix.node-version }}
+#       uses: actions/setup-node@v4
+#       with:
+#         node-version: ${{ matrix.node-version }}
+#         cache: 'npm'
+    
+#     # Step 3: Install dependencies
+#     - name: Install dependencies
+#       run: npm ci
+    
+#     # Step 4: Run tests
+#     - name: Run tests
+#       run: npm test
+    
+#     # Step 5: Upload coverage reports (optional)
+#     - name: Upload coverage to Codecov
+#       uses: codecov/codecov-action@v3
+      # if: matrix.node-version == '20.x'
+#       with:
+#         files: ./coverage/lcov.info
+#         flags: unittests
+#         name: codecov-umbrella
+#         fail_ci_if_error: false
