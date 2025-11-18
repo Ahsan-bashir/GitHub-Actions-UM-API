@@ -1,28 +1,48 @@
 {
   "name": "user-management-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "User Management API with GitHub Actions CI/CD",
   "main": "src/index.js",
-   "scripts": {
+  "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest --coverage --detectOpenHandles",
-    "test:watch": "jest --watchALL"
+    "test:watch": "jest --watchALL",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md}\"",
+    "quality": "npm run lint && npm run format:check && npm test"
   },
-  "keywords": ["express", "api", "github-actions", "ci-cd"],
+  "keywords": [
+    "express",
+    "api",
+    "github-actions",
+    "ci-cd"
+  ],
   "author": "Ahsan",
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0"
   },
   "devDependencies": {
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.5.0",
     "jest": "^30.2.0",
     "nodemon": "^3.1.11",
+    "prettier": "^3.6.2",
     "supertest": "^7.1.4"
   },
   "jest": {
     "testEnvironment": "node",
-    "coveragePathIgnorePatterns": ["/node_modules/"],
-    "testMatch": ["**/__tests__/**/*.test.js"]
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.js"
+    ]
   }
 }
