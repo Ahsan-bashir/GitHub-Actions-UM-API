@@ -2,9 +2,9 @@ name: Node.js CI/CD
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, feature/test-linting]
   pull_request:
-    branches: [ main, master ]
+    branches: [ main, master, feature/test-linting ]
 
 jobs:
   # Job 1: Code Quality Checks (Linting & Formatting)
