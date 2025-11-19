@@ -1,20 +1,35 @@
 const express = require('express');
 const app = express();
 
-// Middleware
+// CORS configuration
+const cors = require('cors');
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
-// In-memory database (array)
-const users = [
-  { id: 1, name: 'Ahsan Bashir', email: 'dev@gmail.com', role: 'admin' },
-  { id: 2, name: 'Bilal Shakeel', email: 'bilal@gmail.com', role: 'user' }
+// In-memory database
+let users = [
+  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'admin' },
+  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'user' }
 ];
 
 let nextId = 3;
 
-// Routes
+// Health check with environment info
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: 'Server is running',
+    environment: process.env.NODE_ENV || 'development',
+    version: process.env.APP_VERSION || '1.0.0'
+  });
+});
 
-// GET /api/users - Get all users
+// GET /api/users
 app.get('/api/users', (req, res) => {
   res.status(200).json({
     success: true,
@@ -23,7 +38,7 @@ app.get('/api/users', (req, res) => {
   });
 });
 
-// GET /api/users/:id - Get single user
+// GET /api/users/:id
 app.get('/api/users/:id', (req, res) => {
   const user = users.find(u => u.id === parseInt(req.params.id));
 
@@ -40,11 +55,10 @@ app.get('/api/users/:id', (req, res) => {
   });
 });
 
-// POST /api/users - Create new user
+// POST /api/users
 app.post('/api/users', (req, res) => {
   const { name, email, role } = req.body;
 
-  // Basic validation
   if (!name || !email) {
     return res.status(400).json({
       success: false,
@@ -67,7 +81,7 @@ app.post('/api/users', (req, res) => {
   });
 });
 
-// PUT /api/users/:id - Update user
+// PUT /api/users/:id
 app.put('/api/users/:id', (req, res) => {
   const user = users.find(u => u.id === parseInt(req.params.id));
 
@@ -96,7 +110,7 @@ app.put('/api/users/:id', (req, res) => {
   });
 });
 
-// DELETE /api/users/:id - Delete user
+// DELETE /api/users/:id
 app.delete('/api/users/:id', (req, res) => {
   const index = users.findIndex(u => u.id === parseInt(req.params.id));
 
@@ -113,11 +127,6 @@ app.delete('/api/users/:id', (req, res) => {
     success: true,
     message: 'User deleted successfully'
   });
-});
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
 
 module.exports = app;

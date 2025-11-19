@@ -1,0 +1,121 @@
+name: Deploy to Environments
+
+on:
+  push:
+    branches:
+      - main        # Production
+      - staging     # Staging
+      - develop     # Development
+
+jobs:
+  determine-environment:
+    name: Determine Environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.set-env.outputs.environment }}
+
+    steps:
+      - name: Set environment based on branch
+        id: set-env
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "environment=production" >> $GITHUB_OUTPUT
+          elif [ "${{ github.ref }}" == "refs/heads/staging" ]; then
+            echo "environment=staging" >> $GITHUB_OUTPUT
+          else
+            echo "environment=development" >> $GITHUB_OUTPUT
+          fi
+
+  deploy-backend:
+    name: Deploy Backend to ${{ needs.determine-environment.outputs.environment }}
+    runs-on: ubuntu-latest
+    needs: determine-environment
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run tests
+        working-directory: backend
+        run: npm test
+
+      - name: Deploy notification
+        run: |
+          echo "🚀 Deploying backend to ${{ needs.determine-environment.outputs.environment }}"
+          echo "Environment: ${{ needs.determine-environment.outputs.environment }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+
+      # Add your actual deployment steps here
+      # Example: SSH to server, Docker deploy, etc.
+
+  deploy-frontend:
+    name: Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: determine-environment
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}
+      # ⬆️ This line tells GitHub which environment to use!
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Create .env file with environment secrets
+        working-directory: frontend
+        run: |
+          echo "VITE_API_URL=${{ secrets.API_URL }}" > .env.production
+          echo "VITE_API_KEY=${{ secrets.API_KEY }}" >> .env.production
+          echo "VITE_APP_ENV=${{ needs.determine-environment.outputs.environment }}" >> .env.production
+        # ⬆️ secrets.API_KEY and secrets.API_URL come from the environment!
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build:production
+
+      - name: Show deployment info
+        run: |
+          echo "🚀 Deployed to: ${{ needs.determine-environment.outputs.environment }}"
+          echo "📦 Using API: ${{ secrets.API_URL }}"
+
+  deployment-summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [determine-environment, deploy-backend, deploy-frontend]
+    if: always()
+    steps:
+      - name: Summary
+        run: |
+            echo "## 🎉 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Environment:** ${{ needs.determine-environment.outputs.environment }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+            echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Status" >> $GITHUB_STEP_SUMMARY
+            echo "- Backend: ${{ needs.deploy-backend.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Frontend: ${{ needs.deploy-frontend.result }}" >> $GITHUB_STEP_SUMMARY

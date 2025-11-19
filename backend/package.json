@@ -13,7 +13,8 @@
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write \"**/*.{js,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,json,md}\"",
-    "quality": "npm run lint && npm run format:check && npm test"
+    "quality": "npm run lint && npm run format:check && npm test",
+    "build": "echo 'No build step for backend'"
   },
   "keywords": [
     "express",
@@ -24,6 +25,7 @@
   "author": "Ahsan",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0"
   },
   "devDependencies": {

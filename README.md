@@ -106,6 +106,52 @@ Current test coverage includes:
 - Input validation
 - Health check endpoint
 
+
+## 🔍 Code Quality
+
+This project maintains high code quality standards using:
+
+### Linting
+- **ESLint** for JavaScript code quality
+- Enforces consistent coding style
+- Catches common errors and anti-patterns
+
+### Formatting
+- **Prettier** for automatic code formatting
+- Ensures consistent code style across the project
+
+### Available Scripts
+```bash
+# Run ESLint
+npm run lint
+
+# Fix ESLint issues automatically
+npm run lint:fix
+
+# Check code formatting
+npm run format:check
+
+# Format all files
+npm run format
+
+# Run all quality checks (lint + format + test)
+npm run quality
+```
+
+### Pre-commit Hooks
+This project uses Husky to run linting and formatting before each commit, ensuring only quality code is committed.
+
+### CI/CD Pipeline
+
+Our GitHub Actions workflow includes:
+1. **Lint Job** - Runs ESLint and Prettier checks
+2. **Test Job** - Runs on Node.js 18.x, 20.x, and 22.x (parallel)
+3. **Build Job** - Validates build and checks for security vulnerabilities
+
+The test job only runs if linting passes, saving CI resources.
+
+![Workflow](https://via.placeholder.com/800x200/4CAF50/FFFFFF?text=Lint+%E2%86%92+Test+(18,20,22)+%7C%7C+Build)
+
 ## 🤝 Contributing
 
 1. Fork the repository
