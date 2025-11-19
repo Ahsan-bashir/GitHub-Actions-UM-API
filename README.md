@@ -1,4 +1,4 @@
-# User Management API - GitHub Actions Project
+# User Management API - Multi-Environment CI/CD
 
 ![Node.js CI](https://github.com/Ahsan-bashir/GitHub-Actions-UM-API/workflows/Node.js%20CI/badge.svg)
 
@@ -151,6 +151,19 @@ Our GitHub Actions workflow includes:
 The test job only runs if linting passes, saving CI resources.
 
 ![Workflow](https://via.placeholder.com/800x200/4CAF50/FFFFFF?text=Lint+%E2%86%92+Test+(18,20,22)+%7C%7C+Build)
+
+![Backend CI](https://github.com/Ahsan-bashir/GitHub-Actions-UM-API/workflows/Backend%20CI/badge.svg)
+![Frontend CI](https://github.com/Ahsan-bashir/GitHub-Actions-UM-API/workflows/Frontend%20CI/badge.svg)
+![Deploy](https://github.com/Ahsan-bashir/GitHub-Actions-UM-API/workflows/Deploy%20to%20Environments/badge.svg)
+
+A full-stack User Management application with automated multi-environment CI/CD pipeline using GitHub Actions.
+
+## 🏗️ Architecture
+```
+┌─────────────────┐         ┌─────────────────┐
+│  React Frontend │ ◄─────► │  Express API    │
+│     (Vite)      │         │    (Node.js)    │
+└─────────────────┘         └─────────────────┘
 
 ## 🤝 Contributing
 

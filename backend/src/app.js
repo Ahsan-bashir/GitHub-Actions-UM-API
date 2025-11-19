@@ -12,7 +12,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // In-memory database
-let users = [
+const users = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'admin' },
   { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'user' }
 ];
