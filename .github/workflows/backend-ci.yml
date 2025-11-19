@@ -15,7 +15,8 @@ jobs:
   lint:
     name: Backend Lint
     runs-on: ubuntu-latest
-
+    env:
+        ACTIONS_STEP_DEBUG: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
